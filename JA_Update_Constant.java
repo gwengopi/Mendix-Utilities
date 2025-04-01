@@ -13,18 +13,25 @@ import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import com.mendix.core.Core;
-import com.mendix.core.CoreException;
 import com.mendix.core.conf.Configuration;
 import com.mendix.logging.ILogNode;
 
 public class JA_Update_Constant extends CustomJavaAction<java.lang.String>
 {
-	public JA_Update_Constant(IContext context)
+	private final java.lang.String ConstantToUpdate;
+	private final java.lang.String valueToUpdate;
+
+	public JA_Update_Constant(
+		IContext context,
+		java.lang.String _constantToUpdate,
+		java.lang.String _valueToUpdate
+	)
 	{
 		super(context);
+		this.ConstantToUpdate = _constantToUpdate;
+		this.valueToUpdate = _valueToUpdate;
 	}
 
 	@java.lang.Override
@@ -34,8 +41,6 @@ public class JA_Update_Constant extends CustomJavaAction<java.lang.String>
 		final ILogNode logger = Core.getLogger("JavaActionLogger");
 		logger.info("Updating constant: " );
 		final Configuration conf = Core.getConfiguration();
-		final Map<String, Object> configMap = new HashMap<>();
-		final Map<String, Long> microflowConstants = new HashMap<>();
 
 		logger.info(conf.getAdminUserName());
 		logger.info(conf.getGuestUserRoleName());
@@ -49,24 +54,24 @@ public class JA_Update_Constant extends CustomJavaAction<java.lang.String>
 		}
 //        logger.info(conf.getConstantValue("ConstantToUpdate") != null?conf.getConstantValue("ConstantToUpdate"):"Empty value");
 
-		if (null != conf.getConstantValue("MyFirstModule.Location_Constant") && conf.getConstantValue("MyFirstModule.Location_Constant") != "") {
-			logger.info(conf.getConstantValue("MyFirstModule.Location_Constant"));
+		if (null != conf.getConstantValue(ConstantToUpdate) && conf.getConstantValue(ConstantToUpdate) != "") {
+			logger.info(conf.getConstantValue(ConstantToUpdate));
 		} else {
 			logger.info("Value is not avilable");
 		}
-		logger.info("Reading value "+Core.getConfiguration().getConstantValue("MyFirstModule.Location_Constant"));
+		logger.info("Reading value "+Core.getConfiguration().getConstantValue(ConstantToUpdate));
 
 //		final Configuration confToUpdate = Core.getConfiguration();
 		final Map<String, Object> configMapToUpdate = new HashMap<>();
 		final Map<String, String> microflowConstantsToUpdate = new HashMap<>();
-		microflowConstantsToUpdate.put("MyFirstModule.Location_Constant", "NewValue");
+		microflowConstantsToUpdate.put(ConstantToUpdate, valueToUpdate);
 		configMapToUpdate.put("MicroflowConstants", microflowConstantsToUpdate);
 //        logger.error( conf1.getConstantValue("Constant"));
 		// Apply the update
 		Core.getConfiguration().updateConfiguration(configMapToUpdate, true);
-		logger.info("Reading new  value "+Core.getConfiguration().getConstantValue("MyFirstModule.Location_Constant"));
+		logger.info("Reading new  value "+Core.getConfiguration().getConstantValue(ConstantToUpdate));
 
-		return Core.getConfiguration().getConstantValue("MyFirstModule.Location_Constant").toString();
+		return Core.getConfiguration().getConstantValue(ConstantToUpdate).toString();
 		// END USER CODE
 	}
 
